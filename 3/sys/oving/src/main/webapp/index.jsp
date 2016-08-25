@@ -1,5 +1,6 @@
 <html>
 <body>
-<h2>Hello World!</h2>
+<p><%System.out.println(new java.util.Date().toString()); %></p>
+<p><script>document.write(new Date());</script></p>
 </body>
 </html>
