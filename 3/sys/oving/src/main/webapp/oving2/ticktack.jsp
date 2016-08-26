@@ -29,6 +29,25 @@
                 tableElement.className = playerClass;
             }
         }
+
+        window.onload = function () {
+            var squares = document.getElementsByClassName("tabellrute");
+            for (var i = 0; i < squares.length; i++) {
+                var square = squares[i];
+                square.onclick = function () {
+                    var currentSquare = square;
+                    return function () {
+                        changeClass(currentSquare, 'p1')
+                    }
+                }(square);
+                square.ondblclick = function () {
+                    var currentSquare = square;
+                    return function () {
+                        changeClass(currentSquare, 'p2')
+                    }
+                }(square);
+            }
+        }
     </script>
 </head>
 
@@ -42,37 +61,19 @@
 
 <table id="bondesjakkbrett">
     <tr>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
+        <td class="tabellrute"></td>
+        <td class="tabellrute"></td>
+        <td class="tabellrute"></td>
     </tr>
     <tr>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
+        <td class="tabellrute"></td>
+        <td class="tabellrute"></td>
+        <td class="tabellrute"></td>
     </tr>
     <tr>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
-        <td class="tabellrute"
-            onclick="changeClass(this, 'p1')"
-            ondblclick="changeClass(this, 'p2')"></td>
+        <td class="tabellrute"></td>
+        <td class="tabellrute"></td>
+        <td class="tabellrute"></td>
     </tr>
 </table>
 <p>Du må laste inn siden på nytt for å starte spillet på nytt.</p>
