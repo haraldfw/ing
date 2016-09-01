@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -26,7 +27,11 @@ public class KundeService {
     @Produces(MediaType.APPLICATION_JSON)
     public Kunde getKunde(@PathParam("kundeId") String kundeId) {
         System.out.println("get on kundeid: " + kundeId + "");
-        return kunder.get(kundeId);
+        Kunde kunde = kunder.get(kundeId);
+        if (kunde == null) {
+            throw new NotFoundException("Kunde with id '" + kundeId + "' does not exist");
+        }
+        return kunde;
     }
 
     @GET
@@ -42,4 +47,16 @@ public class KundeService {
         System.out.println("post in kunder");
         kunder.put(kunde.getId(), kunde);
     }
+
+    // TODO: 01.09.2016
+    // ny DELETE-metode i KundeService.
+    // method=DELETE
+    // path /kunder/${kundeId}.
+    // Slett elementet med gitt id fra map-objektet på serveren
+
+    // oppdatering av et element
+    // method=PUT
+    // returnere 404 hvis elementet ikke eksisterer.
+    //     kaste "javax.ws.rs.NotFoundException" i metoden.
+
 }
