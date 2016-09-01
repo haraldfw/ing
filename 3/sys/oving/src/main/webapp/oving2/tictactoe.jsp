@@ -14,7 +14,7 @@
         }
 
         .p1 {
-            background-color: red;
+            background-color: #F66;
         }
 
         .p2 {
