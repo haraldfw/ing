@@ -8,7 +8,7 @@ import org.junit.Test;
  */
 public class MainTest {
 
-    private int[] stockDiff = new int[]{-1, +3, -9, +2, +2, -1, +2, -1, -5};
+    private Integer[] stockDiff = new Integer[]{-1, +3, -9, +2, +2, -1, +2, -1, -5};
 
     @Test
     public void testStock() throws Exception {

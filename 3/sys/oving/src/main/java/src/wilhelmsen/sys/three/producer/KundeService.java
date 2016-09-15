@@ -43,7 +43,7 @@ public class KundeService {
     }
 
     @DELETE
-    @Path("/oving3/kunder/{kundeId}")
+    @Path("{kundeId}")
     @Consumes(MediaType.APPLICATION_JSON)
     public void deleteKunde(@PathParam("kundeId") String kundeId) {
         System.out.println("Kunde with id '" + kundeId + "' was deleted");
