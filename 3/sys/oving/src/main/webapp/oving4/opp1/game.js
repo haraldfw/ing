@@ -5,8 +5,8 @@ $(document).ready(function() {
         var $div = $("div#gamebox");
         $div.animate({
             top: '100%',
-            marginTop: Math.random() * 100,
-            marginLeft: Math.random() * 100
+            marginTop: Math.random() * 800,
+            marginLeft: Math.random() * 800
         });
     });
 

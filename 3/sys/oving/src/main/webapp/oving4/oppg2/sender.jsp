@@ -10,11 +10,9 @@
 <head>
     <title>Oving 4 Oppg 2</title>
     <script src="../../jquery-3.1.0.min.js"></script>
-    <script src="msg.js"></script>
+    <script src="sendData.js"></script>
 </head>
 <body>
-<p>Message: <div id="content"></div>
-
 <input type="text" id="messageInput" title="Message" placeholder="new message">
 <button id="messageButton">Send</button>
 </body>
