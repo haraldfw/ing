@@ -9,7 +9,7 @@
 <html>
 <head>
     <title>Øving 4</title>
-    <script src="jquery-3.1.0.min.js"></script>
+    <script src="../../jquery-3.1.0.min.js"></script>
     <script src="game.js"></script>
 </head>
 <body>
