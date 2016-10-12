@@ -10,9 +10,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws Exception {
         List<Node> nodes = GraphGet.getGraph("src/main/resources/nodes.txt");
-
         System.out.println(Arrays.toString(nodes.toArray()));
-
         System.out.println(Dijkstra.getPaths(nodes, GraphGet.getNode("1", nodes)));
     }
 }

@@ -34,7 +34,7 @@ public class GraphGet {
                 nodes.add(nodeTo);
             }
 
-            nodeFrom.addVertex(new Vertex(weight, nodeTo));
+            nodeFrom.addVertex(new Edge(weight, nodeFrom, nodeTo));
         }
 
         return nodes;

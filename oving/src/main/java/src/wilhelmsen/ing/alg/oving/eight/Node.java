@@ -8,9 +8,7 @@ import java.util.List;
  */
 public class Node {
     private final String id;
-    private final List<Vertex> vertices;
-
-    public boolean visited = false;
+    private final List<Edge> vertices;
 
     private float cumulativeWeight = Float.POSITIVE_INFINITY;
 
@@ -21,7 +19,7 @@ public class Node {
         this.vertices = new ArrayList<>();
     }
 
-    public void addVertex(Vertex v) {
+    public void addVertex(Edge v) {
         vertices.add(v);
     }
 
@@ -29,7 +27,7 @@ public class Node {
         return id;
     }
 
-    public List<Vertex> getVertices() {
+    public List<Edge> getEdges() {
         return vertices;
     }
 
@@ -52,7 +50,7 @@ public class Node {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Vertex v : vertices) {
+        for (Edge v : vertices) {
             sb.append("\n");
             sb.append(id);
             sb.append(" ");
