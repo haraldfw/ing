@@ -1,0 +1,13 @@
+Tribune: VIP
+	Kapasitet: 25
+	Solgte billetter: 1
+	Inntekt: 500.0Tribune: Ståplass
+	Kapasitet: 20
+	Solgte billetter: 4
+	Inntekt: 800.0Tribune: Sitteplass
+	Kapasitet: 50
+	Solgte billetter: 18
+	Inntekt: 2700.0Tribune: Ståplass
+	Kapasitet: 50
+	Solgte billetter: 46
+	Inntekt: 6900.0

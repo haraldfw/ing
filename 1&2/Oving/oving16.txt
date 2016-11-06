@@ -1,0 +1,199 @@
+--- OPPGAVE 1 ---
+--- A) ---
+SELECT 
+  * 
+FROM 
+  ORDREHODE h 
+  INNER JOIN ORDREDETALJ d 
+    ON d.ORDRENR = h.ORDRENR 
+WHERE 
+  h.LEVNR = 44;
+
+--- B) ---
+SELECT
+  li.NAVN,
+  li.LEVBY
+FROM
+  LEVINFO li
+  INNER JOIN
+  PRISINFO pi
+    ON li.LEVNR = pi.LEVNR
+WHERE pi.DELNR = 1;
+
+--- C) ---
+SELECT
+  li.LEVNR,
+  li.NAVN,
+  pi.PRIS
+FROM
+  LEVINFO li
+  NATURAL JOIN
+  PRISINFO pi
+GROUP BY li.LEVNR, li.NAVN, pi.PRIS
+HAVING(SELECT MIN(pi2.PRIS) FROM PRISINFO pi2 WHERE pi2.DELNR = 201) = pris;
+
+--- D) ---
+SELECT DISTINCT 
+  od.ORDRENR,
+  od.KVANTUM,
+  od.DELNR,
+  oh.DATO,
+  di.BESKRIVELSE,
+  pi.PRIS,
+  pi.PRIS*od.KVANTUM
+FROM
+  ORDREHODE oh
+  NATURAL JOIN ORDREDETALJ od
+  NATURAL JOIN DELINFO di
+  NATURAL JOIN PRISINFO pi
+WHERE od.ORDRENR = 16 AND oh.ORDRENR = 16 AND pi.DELNR = di.DELNR
+GROUP BY od.ORDRENR,
+  od.KVANTUM,
+  od.DELNR,
+  oh.DATO,
+  di.BESKRIVELSE,
+  pi.PRIS
+;
+
+--- E) ---
+SELECT 
+  pi.DELNR, 
+  pi.LEVNR 
+FROM 
+  PRISINFO pi
+GROUP BY 
+  pi.DELNR, 
+  pi.LEVNR, 
+  pi.PRIS
+HAVING 
+  (
+    SELECT 
+      PRIS 
+    FROM 
+      PRISINFO 
+    WHERE 
+      KATALOGNR = 'X7770'
+  ) < pi.PRIS
+;
+
+--- F) ---
+--- i) ---
+--Se bok
+--- ii) ---
+CREATE VIEW fusedLevInfo AS 
+  SELECT
+    *
+  FROM
+    LEVINFO 
+    NATURAL JOIN 
+    POSTLOK;
+
+--- G) ---
+SELECT 
+  LEVBY 
+FROM 
+  LEVINFO 
+WHERE 
+  LEVBY NOT IN(
+    SELECT 
+      LEVBY 
+    FROM 
+      LEVINFO NATURAL JOIN PRISINFO
+  );
+
+--- H) ---
+-- Lag et view som representerer alle leverandørene som kan
+SELECT * from kanLevere;
+DROP VIEW  KANLEVERE;
+CREATE VIEW kanLevere AS
+  SELECT 
+    pi.LEVNR,
+    pi.DELNR,
+    od.KVANTUM*pi.PRIS AS tp
+  FROM
+    PRISINFO pi INNER JOIN ORDREDETALJ od
+    ON pi.DELNR = od.DELNR
+  WHERE
+    od.ORDRENR = 18 AND
+    pi.DELNR IN(
+      SELECT
+        DELNR
+      FROM 
+        ORDREDETALJ
+      WHERE 
+        ORDRENR = 18
+      AND
+        ORDREDETALJ.DELNR = pi.DELNR
+    );
+
+CREATE VIEW TOTALPRISER AS
+SELECT
+  kl.LEVNR,
+  SUM(tp) as tp
+FROM
+  KANLEVERE kl
+GROUP BY kl.LEVNR
+HAVING 
+  COUNT(kl.DELNR) = (
+    SELECT 
+      COUNT(DELNR) 
+    FROM 
+      ORDREDETALJ 
+    WHERE 
+      ORDRENR = 18
+  );
+
+SELECT 
+  *
+FROM
+  TOTALPRISER tps
+WHERE (
+        SELECT 
+          MIN(tp) 
+        FROM 
+          TOTALPRISER) = tps.TP;
+
+--- OPPGAVE 2 ---
+
+--- A) ---
+SELECT * FROM FORLAG 
+WHERE TELEFON LIKE '2%' 
+UNION 
+SELECT * FROM FORLAG 
+WHERE TELEFON NOT LIKE '2%' 
+UNION 
+SELECT * FROM FORLAG 
+WHERE TELEFON IS NULL;
+
+--- B) ---
+SELECT
+  AVG(
+      CASE WHEN
+        f.DOD_AAR IS NULL AND f.FODE_AAR > 1900
+      THEN
+        YEAR(CURRENT_DATE)
+      ELSE
+      f.DOD_AAR
+      END
+      - f.FODE_AAR
+  )
+FROM 
+  FORFATTER f
+;
+
+--- C) ---
+SELECT 
+  CAST(
+      SUM(
+          CASE WHEN 
+            f.FODE_AAR IS NOT NULL 
+            AND 
+            (f.FODE_AAR > 1900 OR f.DOD_AAR IS NOT NULL) 
+          THEN 1
+          ELSE 0 END
+      ) 
+  AS FLOAT) 
+  / COUNT(*)
+FROM
+  FORFATTER f
+;

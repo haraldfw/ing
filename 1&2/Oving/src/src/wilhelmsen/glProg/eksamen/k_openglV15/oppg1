@@ -1,0 +1,58 @@
+Oppgave 1
+
+a)
+En variable, representerer en chunk med data, dataen har en datatype, feks float, double, int, byte eller en klasse-instans. Man har fire typer variabler, instans-variabler, klasse-variabler, lokale variabler og parametere.
+
+Instansvariabler:
+Objekter kan lagre sine egne "ikke-statiske" variabler (variabler ikke deklarert med'static') som er uavhengige mellom instanser.
+Klassevariabler:
+Disse er deklarert med kodeord 'static' i en klasse og er felles for alle instanser av den samme klassen.
+Lokale variabler:
+Dette er variabler som ikke er klassifisert etter et kodeord, men heller hvor de deklareres. Lokale variabler deklareres inne i kodeblokker, og eksisterer bare så lenge kodeblokken ikke er ferdig med å kjøre.
+Parametere:
+Parametere er argumenter som tas inn i metodehoder, de eksisterer bare så lenge metoden kjører.
+
+Det er bare klassevariabler og instansvariabler som kan refereres til som "felt". Felt denoterer en variabel som er gyldig i hele klassen.
+
+b)
+Metoder skiller mellom seg med "signaturen sin". Signaturen består av metodenavnet og alle argumenter de tar inn. Når man har flere metoder som heter det samme men har ulik signatur grunnet at de tar inn forskjellige antall og/eller type argumenter kalles det metode- overbelastning (method overloading).
+
+c)
+Komposisjon er når et objekt har et felt som er en instans av et annet objekt. Komposisjon er noe som ofte stilles opp i mot arv. Komposisjon er noe som er utrolig praktisk å bruke i et designmønster som heter "Chain of Responsibility". I dette designmønsteret er programmet designet på en slik måte at programmer er bygd opp av "Behandlere". Klienten snakker til mesteren, klassen på toppen av kommandokjeden, så, ut i fra hva slags arbeid som skal utføres, så delegerer den arbeidet til en av behandlerne sine, i slike mønster er det som oftest bare en 1 instans per behandlerklasse. I et slikt mønster har da mesteren som oftest veldig få instanser (i en komposisjon) av noen undersåtter, som igjen kan ha instanser av andre undersåtter osv.
+
+ d)
+ for(int i = 0; i < 5; i++) {
+    for (int j=0;j <= i;j++) {
+        System.out.print("*");
+    }
+    System.out.println();
+ }
+ *
+ **
+ ***
+ ****
+ *****
+
+e)
+1. i = 0
+2. j = 0
+3. j <= i
+4. true: print '*', ++j, goto 3.
+5. false: print '\n', ++i, goto 1.
+6. j < 5
+7. true: goto 1.
+8. false: system exit
+
+f)
+x = 3
+y = 7
+
+4 + 3*x*x*x == 81 && 4 + x*y == 49 && y+25%5 + 2 > 10 && 3+x/4 + 2*y == 17
+4 + 3*3*3*3 = 4 + 81 = 85 == 81  |  f
+4 + 3*7 = 25 == 49  |  f
+7 + 25%5 + 2 = 7 + 2 = 9 > 10 |  f
+3 + 3/4 + 2*7 = 3 + 0 + 14 = 17 == 17  |  17 // 3/4 = 0 pga heltallsdivisjon
+f && f && f %% t = FALSE
+
+4 + 3*x*x*x == 81 && 4 + x*y == 49 && y+25%5 + 2 > 10 || 3+x/4 + 2*y == 17
+f && f %% f || t = TRUE
