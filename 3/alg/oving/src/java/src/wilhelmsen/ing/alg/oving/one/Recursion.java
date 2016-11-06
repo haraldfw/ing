@@ -1,4 +1,4 @@
-package src.wilhelmsen.ing.oving1;
+package src.wilhelmsen.ing.alg.oving.one;
 
 /**
  * Created by Harald Floor Wilhelmsen on 24.08.2016.
