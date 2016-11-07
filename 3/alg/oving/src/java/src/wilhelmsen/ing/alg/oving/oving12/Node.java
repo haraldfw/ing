@@ -1,0 +1,60 @@
+package src.wilhelmsen.ing.alg.oving.oving12;
+
+/**
+ * Created by Harald on 07.11.2016.
+ */
+public class Node implements Comparable<Node> {
+
+    private byte value;
+    private int freq;
+    private Node left;
+    private Node right;
+
+    public Node(byte value, int freq) {
+        this.value = value;
+        this.freq = freq;
+    }
+
+    public Node(int freq, Node left, Node right) {
+        this.freq = freq;
+        this.left = left;
+        this.right = right;
+    }
+
+    public byte getValue() {
+        return value;
+    }
+
+    public boolean isLeaf() {
+        return left == null && right == null;
+    }
+
+    @Override
+    public int compareTo(Node that) {
+        return this.freq - that.freq;
+    }
+
+    public void incrementFreq() {
+        freq++;
+    }
+
+    public int getFreq() {
+        return freq;
+    }
+
+    public Node getLeft() {
+        return left;
+    }
+
+    public void setLeft(Node left) {
+        this.left = left;
+    }
+
+    public Node getRight() {
+        return right;
+    }
+
+    public void setRight(Node right) {
+        this.right = right;
+    }
+}

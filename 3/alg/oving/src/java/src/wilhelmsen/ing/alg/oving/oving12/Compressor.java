@@ -1,11 +1,6 @@
 package src.wilhelmsen.ing.alg.oving.oving12;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * Created by Harald on 06.11.2016.
@@ -13,24 +8,56 @@ import java.nio.file.Paths;
 public class Compressor {
     public static void main(String[] args) throws Exception {
         Compressor compressor = new Compressor();
-        System.out.println(new String(compressor.readFile("/test_data.txt")));
-        compressor.writeFile("\\D:\\dev\\compressed.d", compressor.compress(compressor.readFile("/test_data.txt")));
+        BitSet bitSet = compressor.compress(FileHandler.readFile("/test_data.txt"));
+        compressor.generateCoding(FileHandler.readFile("/test_data.txt"));
+        FileHandler.writeFile("\\D:\\dev\\compressed.d", FileHandler.bitSetToByteAr(bitSet));
     }
 
-    private byte[] compress(byte[] input) {
-        return "test_test".getBytes();
+    private BitSet compress(byte[] input) {
+
+        return new BitSet();
     }
 
-    private byte[] decompress(byte[] input) {
-        return new byte[0];
+    private Node generateCoding(byte[] input) {
+        Map<Byte, Node> nodes = getFrequencies(input);
+        Node tree = generateTree(nodes);
+        return tree;
     }
 
-    private byte[] readFile(String fileName) throws Exception {
-        InputStream is = getClass().getResourceAsStream(fileName);
-        return IOUtils.readFully(is, is.available());
+    private Map<Byte, BitSet> generateCoding(Node tree) {
+        return new HashMap<>();
     }
 
-    private void writeFile(String filename, byte[] data) throws Exception {
-        FileUtils.writeByteArrayToFile(new File(filename), data);
+    private Node generateTree(Map<Byte, Node> nodes) {
+        Queue<Node> queue = new PriorityQueue<>(nodes.values());
+        while (!queue.isEmpty()) {
+            Node nodeOne = queue.poll();
+            if (queue.isEmpty()) {
+                return nodeOne;
+            }
+            Node nodeTwo = queue.poll();
+
+            Node merged = mergeNodes(nodeOne, nodeTwo);
+            queue.add(merged);
+            System.out.println(String.valueOf(nodeOne.getFreq()) + " " + String.valueOf(nodeTwo.getFreq()));
+        }
+        return null;
+    }
+
+    private Map<Byte, Node> getFrequencies(byte[] input) {
+        Map<Byte, Node> nodes = new HashMap<>();
+        for (byte b : input) {
+            Node node = nodes.get(b);
+            if (node == null) {
+                node = new Node(b, 0);
+                nodes.put(b, node);
+            }
+            node.incrementFreq();
+        }
+        return nodes;
+    }
+
+    private Node mergeNodes(Node left, Node right) {
+        return new Node(left.getFreq() + right.getFreq(), left, right);
     }
 }
