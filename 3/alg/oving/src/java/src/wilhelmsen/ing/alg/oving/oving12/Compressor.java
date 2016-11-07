@@ -1,5 +1,6 @@
 package src.wilhelmsen.ing.alg.oving.oving12;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -12,16 +13,33 @@ public class Compressor {
         FileHandler.writeFile("\\D:\\dev\\compressed.d", FileHandler.bitSetToByteAr(bitSet));
     }
 
-    private BitSet compress(byte[] input) {
+    private BitSet compress(byte[] input) throws Exception {
         Map<Byte, Node> nodes = getFrequencies(input);
+        for (Map.Entry<Byte, Node> entry : nodes.entrySet()) {
+            System.out.println(byteToUnicode(entry.getValue().getValue()) + " " + entry.getValue().getFreq());
+        }
+        System.out.println("\n");
         Node tree = generateTree(nodes);
-        Map<Byte, BitSet> codding = generateCoding(tree);
+        Map<Byte, BitSet> coding = generateCoding(tree, new BitSet(), new HashMap<>(), 0);
+        for(Map.Entry<Byte, BitSet> entry : coding.entrySet()) {
+            System.out.println(byteToUnicode(entry.getKey()) + " " + bitSetToBinaryString(entry.getValue()));
+        }
         return new BitSet();
     }
 
-    private Map<Byte, BitSet> generateCoding(Node tree) {
-        
-        return new HashMap<>();
+    private Map<Byte, BitSet> generateCoding(Node tree, BitSet code, Map<Byte, BitSet> codes, int codeIndex) {
+        if(tree.isLeaf()) {
+            codes.put(tree.getValue(), code);
+        } else {
+            BitSet clone = (BitSet) code.clone();
+            clone.set(codeIndex, false);
+            generateCoding(tree.getLeft(), clone, codes, codeIndex + 1);
+
+            clone = (BitSet) code.clone();
+            clone.set(codeIndex, true);
+            generateCoding(tree.getRight(), clone, codes, codeIndex + 1);
+        }
+        return codes;
     }
 
     private Node generateTree(Map<Byte, Node> nodes) {
@@ -35,7 +53,7 @@ public class Compressor {
 
             Node merged = mergeNodes(nodeOne, nodeTwo);
             queue.add(merged);
-            System.out.println(String.valueOf(nodeOne.getFreq()) + " " + String.valueOf(nodeTwo.getFreq()));
+//            System.out.println(String.valueOf(nodeOne.getFreq()) + " " + String.valueOf(nodeTwo.getFreq()));
         }
         return null;
     }
@@ -55,5 +73,22 @@ public class Compressor {
 
     private Node mergeNodes(Node left, Node right) {
         return new Node(left.getFreq() + right.getFreq(), left, right);
+    }
+
+    private String bitSetToBinaryString(BitSet set) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < set.length(); i++) {
+            sb.append(set.get(i) ? "1" : "0");
+        }
+        return sb.toString();
+    }
+
+    private String byteToUnicode(byte b) {
+        try {
+            return new String(new byte[]{b}, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "Unsupported byte";
     }
 }
