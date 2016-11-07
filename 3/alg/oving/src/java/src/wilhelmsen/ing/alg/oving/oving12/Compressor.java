@@ -9,22 +9,18 @@ public class Compressor {
     public static void main(String[] args) throws Exception {
         Compressor compressor = new Compressor();
         BitSet bitSet = compressor.compress(FileHandler.readFile("/test_data.txt"));
-        compressor.generateCoding(FileHandler.readFile("/test_data.txt"));
         FileHandler.writeFile("\\D:\\dev\\compressed.d", FileHandler.bitSetToByteAr(bitSet));
     }
 
     private BitSet compress(byte[] input) {
-
+        Map<Byte, Node> nodes = getFrequencies(input);
+        Node tree = generateTree(nodes);
+        Map<Byte, BitSet> codding = generateCoding(tree);
         return new BitSet();
     }
 
-    private Node generateCoding(byte[] input) {
-        Map<Byte, Node> nodes = getFrequencies(input);
-        Node tree = generateTree(nodes);
-        return tree;
-    }
-
     private Map<Byte, BitSet> generateCoding(Node tree) {
+        
         return new HashMap<>();
     }
 
