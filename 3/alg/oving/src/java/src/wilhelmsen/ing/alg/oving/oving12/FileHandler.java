@@ -10,7 +10,7 @@ import java.util.BitSet;
 /**
  * Created by Harald on 07.11.2016.
  */
-class FileHandler {
+public final class FileHandler {
 
     private FileHandler() {
     }

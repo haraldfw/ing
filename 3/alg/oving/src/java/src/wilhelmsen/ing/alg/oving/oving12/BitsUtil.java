@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by Harald on 7.11.16.
  */
-public class BitsUtil {
+public final class BitsUtil {
 
     private BitsUtil() {
     }
