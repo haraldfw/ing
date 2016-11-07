@@ -5,13 +5,13 @@ package src.wilhelmsen.ing.alg.oving.oving12;
  */
 public class Node implements Comparable<Node> {
 
-    private byte value;
+    private byte byteValue;
     private int freq;
     private Node left;
     private Node right;
 
-    public Node(byte value, int freq) {
-        this.value = value;
+    public Node(byte byteValue, int freq) {
+        this.byteValue = byteValue;
         this.freq = freq;
     }
 
@@ -21,8 +21,8 @@ public class Node implements Comparable<Node> {
         this.right = right;
     }
 
-    public byte getValue() {
-        return value;
+    public byte getByteValue() {
+        return byteValue;
     }
 
     public boolean isLeaf() {

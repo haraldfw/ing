@@ -16,28 +16,29 @@ public class Compressor {
     private BitSet compress(byte[] input) throws Exception {
         Map<Byte, Node> nodes = getFrequencies(input);
         for (Map.Entry<Byte, Node> entry : nodes.entrySet()) {
-            System.out.println(byteToUnicode(entry.getValue().getValue()) + " " + entry.getValue().getFreq());
+            System.out.println(byteToUnicode(entry.getValue().getByteValue()) + " " + entry.getValue().getFreq());
         }
         System.out.println("\n");
         Node tree = generateTree(nodes);
-        Map<Byte, BitSet> coding = generateCoding(tree, new BitSet(), new HashMap<>(), 0);
-        for(Map.Entry<Byte, BitSet> entry : coding.entrySet()) {
+        Map<Byte, MyBitSet> coding = generateCoding(tree, new MyBitSet(0), new HashMap<>(), 0);
+        for (Map.Entry<Byte, MyBitSet> entry : coding.entrySet()) {
             System.out.println(byteToUnicode(entry.getKey()) + " " + bitSetToBinaryString(entry.getValue()));
         }
         return new BitSet();
     }
 
-    private Map<Byte, BitSet> generateCoding(Node tree, BitSet code, Map<Byte, BitSet> codes, int codeIndex) {
-        if(tree.isLeaf()) {
-            codes.put(tree.getValue(), code);
+    private Map<Byte, MyBitSet> generateCoding(Node node, MyBitSet code, Map<Byte, MyBitSet> codes, int codeIndex) {
+        if (node.isLeaf()) {
+            codes.put(node.getByteValue(), code);
         } else {
-            BitSet clone = (BitSet) code.clone();
-            clone.set(codeIndex, false);
-            generateCoding(tree.getLeft(), clone, codes, codeIndex + 1);
+            int realsize = codeIndex + 1;
 
-            clone = (BitSet) code.clone();
+            MyBitSet clone = cloneBitSet(code, realsize);
+            generateCoding(node.getLeft(), clone, codes, codeIndex + 1);
+
+            clone = cloneBitSet(code, realsize);
             clone.set(codeIndex, true);
-            generateCoding(tree.getRight(), clone, codes, codeIndex + 1);
+            generateCoding(node.getRight(), clone, codes, codeIndex + 1);
         }
         return codes;
     }
@@ -53,7 +54,6 @@ public class Compressor {
 
             Node merged = mergeNodes(nodeOne, nodeTwo);
             queue.add(merged);
-//            System.out.println(String.valueOf(nodeOne.getFreq()) + " " + String.valueOf(nodeTwo.getFreq()));
         }
         return null;
     }
@@ -75,9 +75,20 @@ public class Compressor {
         return new Node(left.getFreq() + right.getFreq(), left, right);
     }
 
-    private String bitSetToBinaryString(BitSet set) {
+    private MyBitSet cloneBitSet(MyBitSet toClone, int sizeOfNewSet) {
+        int realSize = toClone.getRealSize();
+        MyBitSet clone = new MyBitSet(sizeOfNewSet);
+        for (int i = 0; i < realSize; i++) {
+            if (toClone.get(i)) {
+                clone.set(i);
+            }
+        }
+        return clone;
+    }
+
+    private String bitSetToBinaryString(MyBitSet set) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < set.length(); i++) {
+        for (int i = 0; i < set.getRealSize(); i++) {
             sb.append(set.get(i) ? "1" : "0");
         }
         return sb.toString();
