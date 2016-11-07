@@ -30,8 +30,12 @@ public final class BitsUtil {
     }
 
     public static String byteToUnicode(byte b) {
+        return byteArToUnicode(new byte[]{b});
+    }
+
+    public static String byteArToUnicode(byte[] bAr) {
         try {
-            return new String(new byte[]{b}, "UTF-8");
+            return new String(bAr, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

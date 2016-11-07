@@ -1,5 +1,6 @@
 package src.wilhelmsen.ing.alg.oving.oving12;
 
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -8,26 +9,69 @@ import java.util.*;
 public class Compressor {
     public static void main(String[] args) throws Exception {
         Compressor compressor = new Compressor();
-        BitSet bitSet = compressor.compress(FileHandler.readFile("/compression/lipsum.txt"));
-        FileHandler.writeFile("\\D:\\dev\\compressed.d", FileHandler.bitSetToByteAr(bitSet));
+        byte[] bytes = compressor.compress(FileHandler.readFile("/compression/oppg12.txt"));
+        FileHandler.writeFile("\\D:\\dev\\compressed.d", bytes);
     }
 
-    private BitSet compress(byte[] input) throws Exception {
+    private byte[] compress(byte[] input) throws Exception {
         Map<Byte, Node> nodes = getFrequencies(input);
+        byte[] charsAsByteAr = getBytes(new ArrayList<>(nodes.values()));
+
         for (Map.Entry<Byte, Node> entry : nodes.entrySet()) {
             System.out.println(
                     BitsUtil.byteToUnicode(entry.getValue().getByteValue()) +
                             " " + entry.getValue().getFreq());
         }
         System.out.println("\n");
+
         Node tree = generateTree(nodes);
-        Map<Byte, MyBitSet> coding = generateCoding(tree);
-        for (Map.Entry<Byte, MyBitSet> entry : coding.entrySet()) {
+        Map<Byte, MyBitSet> huffmanCoding = generateCoding(tree);
+
+        for (Map.Entry<Byte, MyBitSet> entry : huffmanCoding.entrySet()) {
             System.out.println(
                     BitsUtil.byteToUnicode(entry.getKey()) +
                             " " + BitsUtil.bitSetToBinaryString(entry.getValue()));
         }
-        return new BitSet();
+
+        return buildCompressedFile(charsAsByteAr, FileHandler.bitSetToByteAr(compress(huffmanCoding, input)));
+    }
+
+    private byte[] buildCompressedFile(byte[] freqs, byte[] compressedContents) {
+        /* File contents, in bytes:
+        freqs-size[8]\
+        freqs[freq-size]\
+        contents
+         */
+        byte[] contents = new byte[8 + freqs.length + compressedContents.length];
+        byte[] freqsSizeAr = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(freqs.length).array();
+
+        System.arraycopy(freqsSizeAr, 0, contents, 0, 8);
+        System.arraycopy(freqs, 0, contents, 8, freqs.length);
+        System.arraycopy(compressedContents, 0, contents, 8 + freqs.length, compressedContents.length);
+
+        return contents;
+    }
+
+    private BitSet compress(Map<Byte, MyBitSet> mapping, byte[] input) {
+        MyBitSet bits = new MyBitSet(0);
+        int shift = 0;
+        for (int i = 0; i < input.length; i++) {
+            byte b = input[i];
+            MyBitSet set = concatBitSets(bits, mapping.get(b));
+            shift += set.getRealSize();
+        }
+        return bits;
+    }
+
+    private MyBitSet concatBitSets(MyBitSet bitSet1, MyBitSet bitSet2) {
+        int shift = bitSet1.getRealSize();
+        int i = bitSet2.nextSetBit(0);
+        while (i > -1) {
+            bitSet1.set(shift + i);
+            i = bitSet2.nextSetBit(i + 1);
+        }
+        bitSet1.setRealSize(shift + bitSet2.getRealSize());
+        return bitSet1;
     }
 
     private Map<Byte, MyBitSet> generateCoding(Node node) {
@@ -39,14 +83,14 @@ public class Compressor {
         if (node.isLeaf()) {
             codes.put(node.getByteValue(), code);
         } else {
-            int realsize = codeIndex + 1;
+            int newIndexAndSize = codeIndex + 1;
 
-            MyBitSet clone = BitsUtil.cloneBitSet(code, realsize);
-            generateCoding(node.getLeft(), clone, codes, codeIndex + 1);
+            MyBitSet clone = BitsUtil.cloneBitSet(code, newIndexAndSize);
+            generateCoding(node.getLeft(), clone, codes, newIndexAndSize);
 
-            clone = BitsUtil.cloneBitSet(code, realsize);
+            clone = BitsUtil.cloneBitSet(code, newIndexAndSize);
             clone.set(codeIndex, true);
-            generateCoding(node.getRight(), clone, codes, codeIndex + 1);
+            generateCoding(node.getRight(), clone, codes, newIndexAndSize);
         }
         return codes;
     }
@@ -77,6 +121,21 @@ public class Compressor {
             node.incrementFreq();
         }
         return nodes;
+    }
+
+    /**
+     * Returns the bytes in the node-objects ordered by their frequency
+     *
+     * @param nodes List of nodes.
+     * @return A byte arrays ordered by frequency from the node-list
+     */
+    private byte[] getBytes(List<Node> nodes) {
+        byte[] c = new byte[nodes.size()];
+        Collections.sort(nodes);
+        for (int i = 0; i < nodes.size(); i++) {
+            c[i] = nodes.get(i).getByteValue();
+        }
+        return c;
     }
 
     private Node mergeNodes(Node left, Node right) {
