@@ -13,7 +13,6 @@ import java.util.BitSet;
 class FileHandler {
 
     private FileHandler() {
-
     }
 
     public static byte[] readFile(String fileName) throws Exception {

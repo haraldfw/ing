@@ -6,7 +6,6 @@ package src.wilhelmsen.ing.alg.oving.oving12;
 public class Decompressor {
 
 
-
     private byte[] decompress(byte[] input) {
         return new byte[0];
     }
