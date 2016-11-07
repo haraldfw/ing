@@ -13,6 +13,12 @@ public class MyBitSet extends BitSet {
         this.realSize = realsize;
     }
 
+    public MyBitSet(BitSet bitSet, int realSize) {
+        super(realSize);
+        this.realSize = realSize;
+
+    }
+
     public int getRealSize() {
         return realSize;
     }

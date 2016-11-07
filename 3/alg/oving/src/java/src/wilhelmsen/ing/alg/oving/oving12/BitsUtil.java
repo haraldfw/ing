@@ -1,6 +1,7 @@
 package src.wilhelmsen.ing.alg.oving.oving12;
 
 import java.io.UnsupportedEncodingException;
+import java.util.BitSet;
 
 /**
  * Created by Harald on 7.11.16.
@@ -33,12 +34,23 @@ public final class BitsUtil {
         return byteArToUnicode(new byte[]{b});
     }
 
-    public static String byteArToUnicode(byte[] bAr) {
+    public static String byteArToUnicode(byte[] byteArray) {
         try {
-            return new String(bAr, "UTF-8");
+            return new String(byteArray, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return "Unsupported byte";
+        return "Unsupported input";
+    }
+
+    public static MyBitSet concatBitSets(MyBitSet bitSet1, MyBitSet bitSet2) {
+        int shift = bitSet1.getRealSize();
+        int i = bitSet2.nextSetBit(0);
+        while (i > -1) {
+            bitSet1.set(shift + i);
+            i = bitSet2.nextSetBit(i + 1);
+        }
+        bitSet1.setRealSize(shift + bitSet2.getRealSize());
+        return bitSet1;
     }
 }

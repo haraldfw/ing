@@ -15,7 +15,7 @@ public final class FileHandler {
     private FileHandler() {
     }
 
-    public static byte[] readFile(String fileName) throws Exception {
+    public static byte[] readContextFile(String fileName) throws Exception {
         InputStream is = FileHandler.class.getResourceAsStream(fileName);
         return IOUtils.readFully(is, is.available());
     }
