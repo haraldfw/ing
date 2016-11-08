@@ -11,8 +11,8 @@ public final class BitsUtil {
     private BitsUtil() {
     }
 
-    public static MyBitSet cloneBitSet(MyBitSet toClone, int sizeOfNewSet) {
-        int realSize = toClone.getRealSize();
+    public static MyBitSet cloneBitSet(BitSet toClone, int sizeOfNewSet) {
+        int realSize = toClone.size();
         MyBitSet clone = new MyBitSet(sizeOfNewSet);
         for (int i = 0; i < realSize; i++) {
             if (toClone.get(i)) {
@@ -43,7 +43,7 @@ public final class BitsUtil {
         return "Unsupported input";
     }
 
-    public static MyBitSet concatBitSets(MyBitSet bitSet1, MyBitSet bitSet2) {
+    public static void concatBitSets(MyBitSet bitSet1, MyBitSet bitSet2) {
         int shift = bitSet1.getRealSize();
         int i = bitSet2.nextSetBit(0);
         while (i > -1) {
@@ -51,15 +51,5 @@ public final class BitsUtil {
             i = bitSet2.nextSetBit(i + 1);
         }
         bitSet1.setRealSize(shift + bitSet2.getRealSize());
-        return bitSet1;
-    }
-
-    public static int concatBitSets(BitSet bitSet1, int realsize1, BitSet bitSet2, int realsize2) {
-        int i = bitSet2.nextSetBit(0);
-        while (i > -1) {
-            bitSet1.set(realsize1 + i);
-            i = bitSet2.nextSetBit(i + 1);
-        }
-        return realsize1 + realsize2;
     }
 }

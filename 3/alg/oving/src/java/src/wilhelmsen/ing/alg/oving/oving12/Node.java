@@ -49,4 +49,11 @@ public class Node implements Comparable<Node> {
     public Node getRight() {
         return right;
     }
+
+    public byte getCharacter(MyBitSet bitSet) {
+        if (isLeaf()) {
+            return byteValue;
+        }
+        return bitSet.readBit() ? right.getCharacter(bitSet) : left.getCharacter(bitSet);
+    }
 }

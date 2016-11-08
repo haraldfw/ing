@@ -7,6 +7,7 @@ import java.util.BitSet;
  */
 public class MyBitSet extends BitSet {
     private int realSize;
+    private int index = 0;
 
     public MyBitSet(int realsize) {
         super(realsize);
@@ -21,18 +22,23 @@ public class MyBitSet extends BitSet {
         this.realSize = realSize;
     }
 
-    public void pushBit(boolean val) {
-        set(realSize, val);
-        realSize += 1;
+    public boolean readBit() {
+        boolean bit = get(index);
+        index++;
+        return bit;
     }
 
-    public void pushByte(byte value) {
-        this.realSize = BitsUtil.concatBitSets(this, realSize, BitSet.valueOf(new byte[]{value}), 8);
-        for (int i = realSize; i < realSize + 8; i++) {
-            if ((value & (1 << i)) > 0) {
-                set(i);
-            }
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof MyBitSet)) {
+            return false;
         }
-        realSize += 8;
+        MyBitSet bs2 = (MyBitSet) obj;
+        boolean realSizeSame = (bs2.getRealSize() == realSize);
+        return super.equals(obj) && realSizeSame;
+    }
+
+    public boolean isRead() {
+        return index >= realSize;
     }
 }

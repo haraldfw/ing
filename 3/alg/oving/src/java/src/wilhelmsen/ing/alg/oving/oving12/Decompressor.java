@@ -1,9 +1,11 @@
 package src.wilhelmsen.ing.alg.oving.oving12;
 
+import org.apache.commons.lang.ArrayUtils;
+
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.BitSet;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Harald on 07.11.2016.
@@ -12,53 +14,70 @@ public class Decompressor {
 
     public static void main(String[] args) throws Exception {
         Decompressor decompressor = new Decompressor();
-        String filename = "D:\\dev\\compressed.d";
-        byte[] input = Files.readAllBytes(Paths.get(filename));
-        System.out.println(new String(decompressor.decompress(input), "UTF-8"));
+        String baseFilename = "D:\\dev\\lipsum.txt";
+        byte[] input = Files.readAllBytes(Paths.get(baseFilename + ".d"));
+        byte[] decompressed = decompressor.decompress(input);
+        FileHandler.writeFile(baseFilename, decompressed);
+
     }
 
     private byte[] decompress(byte[] input) {
         // -- splitting input --
         // freqsize
-        int freqSize = input[0];
+        byte[] freqsSizeBytes = new byte[4];
+        System.arraycopy(input, 0, freqsSizeBytes, 0, 4);
+
+        int freqSize = ByteBuffer.wrap(freqsSizeBytes).getInt();
         System.out.println("Frequencies size: " + freqSize);
-        int shift = 1;
+        int shift = Integer.BYTES;
+
         // freqs
-        byte[] nodes = new byte[freqSize];
-        System.arraycopy(input, shift, nodes, 0, freqSize);
-        Node n = getHuffmanNode(BitSet.valueOf(nodes), 0);
-        HuffmanTree huffmanTree = new HuffmanTree(n);
-        huffmanTree.coding.entrySet().forEach(
-                entry -> System.out.println(BitsUtil.byteToUnicode(entry.getKey()))
-        );
-        System.out.println("Sorted frequencies:");
-        System.out.println(BitsUtil.byteArToUnicode(nodes));
+        byte[] characters = new byte[freqSize];
+        System.arraycopy(input, shift, characters, 0, freqSize);
+
+        shift += freqSize;
+        int[] freqs = new int[freqSize];
+        for (int i = 0; i < freqs.length; i++) {
+            int index = shift + i * Integer.BYTES;
+            byte[] freqBytes = new byte[Integer.BYTES];
+            System.arraycopy(input, index, freqBytes, 0, Integer.BYTES);
+            int freqInt = ByteBuffer.wrap(freqBytes).getInt();
+            freqs[i] = freqInt;
+        }
+
+        System.out.println("Frequency chars:");
+        System.out.println(BitsUtil.byteArToUnicode(characters));
+        System.out.println("Frequencies numbers:");
+        System.out.println(Arrays.toString(freqs));
+
 
         // compressed content
-        shift += freqSize;
+        shift += freqSize * Integer.BYTES;
         byte[] remainingBytes = new byte[input.length - shift];
         System.arraycopy(input, shift, remainingBytes, 0, remainingBytes.length);
-        System.out.println("Contents:");
-        System.out.println(BitsUtil.byteArToUnicode(remainingBytes));
 
-        return new byte[0];
-    }
+        HuffmanTree huffmanTree = new HuffmanTree(getNodes(characters, freqs));
 
-    public Node getHuffmanNode(BitSet bs, int index) {
-        index++;
-        if (bs.get(index)) {
-//            bs.set
-            return new Node(bs.get(index + 1, index + 9).toByteArray()[0], 0);
-        } else {
-            Node left = getHuffmanNode(bs, index);
-            Node right = getHuffmanNode(bs, index);
-            return new Node(left, right);
+        MyBitSet remainingBits = BitsUtil.cloneBitSet(BitSet.valueOf(remainingBytes), remainingBytes.length * 8);
+
+        List<Byte> decodedData = new ArrayList<>();
+        while (!remainingBits.isRead()) {
+            byte b = huffmanTree.tree.getCharacter(remainingBits);
+            decodedData.add(b);
         }
+
+        Byte[] bytes = decodedData.toArray(new Byte[decodedData.size()]);
+        return ArrayUtils.toPrimitive(bytes);
     }
 
-    private Map<Byte, MyBitSet> decode(){
-        return null;
+    private Map<Byte, Node> getNodes(byte[] characters, int[] freqs) {
+        Map<Byte, Node> nodes = new HashMap<>();
+        for (int i = 0; i < characters.length; i++) {
+            byte character = characters[i];
+            Node node = new Node(character, freqs[i]);
+            nodes.put(character, node);
+        }
+        return nodes;
     }
-
 
 }

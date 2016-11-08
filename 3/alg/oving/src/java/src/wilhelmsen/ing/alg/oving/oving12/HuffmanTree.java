@@ -12,15 +12,15 @@ public class HuffmanTree {
 
     public Map<Byte, MyBitSet> coding;
     public Node tree;
+    public Map<Byte, Node> nodeMap;
 
-    /**
-     * Creates a huffman coding tree from raw uncompressed data.
-     *
-     * @param input
-     */
     public HuffmanTree(byte[] input) {
-        Map<Byte, Node> nodeMap = getFrequencies(input);
+        this(getFrequencies(input));
+    }
 
+    public HuffmanTree(Map<Byte, Node> nodesMap) {
+        this.nodeMap = nodesMap;
+        System.out.println("Frequencies: ");
         nodeMap.values().forEach(value -> System.out.println(
                 BitsUtil.byteToUnicode(value.getByteValue()) + " " + value.getFreq()));
         System.out.println("\n");
@@ -28,15 +28,24 @@ public class HuffmanTree {
         tree = generateTree(nodeMap);
         coding = generateCoding(tree, new MyBitSet(0), new HashMap<>(), 0);
 
+        System.out.println("Encoding: ");
         coding.entrySet().forEach(
                 entry -> System.out.println(
                         BitsUtil.byteToUnicode(entry.getKey()) +
                                 " " + BitsUtil.bitSetToBinaryString(entry.getValue())));
     }
 
-    public HuffmanTree(Node tree) {
-        this.tree = tree;
-        coding = generateCoding(tree, new MyBitSet(0), new HashMap<>(), 0);
+    private static Map<Byte, Node> getFrequencies(byte[] input) {
+        Map<Byte, Node> nodes = new HashMap<>();
+        for (byte b : input) {
+            Node node = nodes.get(b);
+            if (node == null) {
+                node = new Node(b, 0);
+                nodes.put(b, node);
+            }
+            node.incrementFreq();
+        }
+        return nodes;
     }
 
     public MyBitSet getCode(byte character) {
@@ -60,8 +69,8 @@ public class HuffmanTree {
         return codes;
     }
 
-    private Node generateTree(Map<Byte, Node> nodes) {
-        Queue<Node> queue = new PriorityQueue<>(nodes.values());
+    private Node generateTree(Map<Byte, Node> frequencyMap) {
+        Queue<Node> queue = new PriorityQueue<>(frequencyMap.values());
         while (!queue.isEmpty()) {
             Node nodeOne = queue.poll();
             if (queue.isEmpty()) {
@@ -74,18 +83,4 @@ public class HuffmanTree {
         }
         return null;
     }
-
-    private Map<Byte, Node> getFrequencies(byte[] input) {
-        Map<Byte, Node> nodes = new HashMap<>();
-        for (byte b : input) {
-            Node node = nodes.get(b);
-            if (node == null) {
-                node = new Node(b, 0);
-                nodes.put(b, node);
-            }
-            node.incrementFreq();
-        }
-        return nodes;
-    }
-
 }
