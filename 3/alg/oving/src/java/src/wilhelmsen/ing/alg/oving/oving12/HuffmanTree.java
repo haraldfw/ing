@@ -8,15 +8,40 @@ import java.util.Queue;
 /**
  * Created by Harald on 7.11.16.
  */
-public class Huffman {
-    public Huffman() {
+public class HuffmanTree {
+
+    public Map<Byte, MyBitSet> coding;
+
+    /**
+     * Creates a huffman coding tree from raw uncompressed data.
+     *
+     * @param input
+     */
+    public HuffmanTree(byte[] input) {
+        Map<Byte, Node> nodeMap = getFrequencies(input);
+
+        nodeMap.values().forEach(value -> System.out.println(
+                BitsUtil.byteToUnicode(value.getByteValue()) + " " + value.getFreq()));
+        System.out.println("\n");
+
+        Node tree = generateTree(nodeMap);
+        coding = generateCoding(tree, new MyBitSet(0), new HashMap<>(), 0);
+
+        coding.entrySet().forEach(
+                entry -> System.out.println(
+                        BitsUtil.byteToUnicode(entry.getKey()) +
+                                " " + BitsUtil.bitSetToBinaryString(entry.getValue())));
     }
 
-    public static Map<Byte, MyBitSet> generateCoding(Node node) {
-        return generateCoding(node, new MyBitSet(0), new HashMap<>(), 0);
+    public HuffmanTree(Node tree) {
+        coding = generateCoding(tree, new MyBitSet(0), new HashMap<>(), 0);
     }
 
-    private static Map<Byte, MyBitSet> generateCoding(Node node, MyBitSet code, Map<Byte,
+    public MyBitSet getCode(byte character) {
+        return coding.get(character);
+    }
+
+    private Map<Byte, MyBitSet> generateCoding(Node node, MyBitSet code, Map<Byte,
             MyBitSet> codes, int codeIndex) {
         if (node.isLeaf()) {
             codes.put(node.getByteValue(), code);
@@ -33,7 +58,7 @@ public class Huffman {
         return codes;
     }
 
-    public static Node generateTree(Map<Byte, Node> nodes) {
+    private Node generateTree(Map<Byte, Node> nodes) {
         Queue<Node> queue = new PriorityQueue<>(nodes.values());
         while (!queue.isEmpty()) {
             Node nodeOne = queue.poll();
@@ -48,7 +73,7 @@ public class Huffman {
         return null;
     }
 
-    public static Map<Byte, Node> getFrequencies(byte[] input) {
+    private Map<Byte, Node> getFrequencies(byte[] input) {
         Map<Byte, Node> nodes = new HashMap<>();
         for (byte b : input) {
             Node node = nodes.get(b);
@@ -61,7 +86,7 @@ public class Huffman {
         return nodes;
     }
 
-    private static Node mergeNodes(Node left, Node right) {
+    private Node mergeNodes(Node left, Node right) {
         return new Node(left.getFreq() + right.getFreq(), left, right);
     }
 }

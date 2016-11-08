@@ -9,28 +9,16 @@ import java.util.Map;
 public class Compressor {
     public static void main(String[] args) throws Exception {
         Compressor compressor = new Compressor();
-        byte[] bytes = compressor.compress(FileHandler.readContextFile("/compression/oppg12.txt"));
+        byte[] bytes = compressor.compress(FileHandler.readContextFile("/compression/lipsum.txt"));
         FileHandler.writeFile("\\D:\\dev\\compressed.d", bytes);
     }
 
+
+
     private byte[] compress(byte[] input) throws Exception {
-        Map<Byte, Node> nodes = Huffman.getFrequencies(input);
-
-        nodes.values().forEach(value -> System.out.println(
-                BitsUtil.byteToUnicode(value.getByteValue()) + " " + value.getFreq()));
-        System.out.println("\n");
-
-        Node tree = Huffman.generateTree(nodes);
-        Map<Byte, MyBitSet> huffmanCoding = Huffman.generateCoding(tree);
-
-        for (Map.Entry<Byte, MyBitSet> entry : huffmanCoding.entrySet()) {
-            System.out.println(
-                    BitsUtil.byteToUnicode(entry.getKey()) +
-                            " " + BitsUtil.bitSetToBinaryString(entry.getValue()));
-        }
-
-        byte[] charsAsByteAr = getStorableBytes(huffmanCoding);
-        return buildCompressedFile(charsAsByteAr, FileHandler.bitSetToByteAr(compress(huffmanCoding, input)));
+        HuffmanTree huffmanTree = new HuffmanTree(input);
+        byte[] charsAsByteAr = getStorableBytes(huffmanTree);
+        return buildCompressedFile(charsAsByteAr, FileHandler.bitSetToByteAr(compress(huffmanTree, input)));
     }
 
     private byte[] buildCompressedFile(byte[] freqs, byte[] compressedContents) {
@@ -56,11 +44,11 @@ public class Compressor {
         return contents;
     }
 
-    private BitSet compress(Map<Byte, MyBitSet> mapping, byte[] input) {
+    private BitSet compress(HuffmanTree mapping, byte[] input) {
         MyBitSet bits = new MyBitSet(0);
         for (int i = 0; i < input.length; i++) {
             byte b = input[i];
-            MyBitSet set = BitsUtil.concatBitSets(bits, mapping.get(b));
+            MyBitSet set = BitsUtil.concatBitSets(bits, mapping.getCode(b));
         }
         return bits;
     }
@@ -85,18 +73,18 @@ public class Compressor {
         int i = 0;
         for (Map.Entry<Byte, MyBitSet> entry : huffmanCoding.entrySet()) {
             BitSet key = BitSet.valueOf(new byte[]{entry.getKey()});
-            MyBitSet code =  entry.getValue();
+            MyBitSet code = entry.getValue();
 
             i++;
         }
         return bitSet;
     }
 
-    private byte[] getStorableBytes(Map<Byte, MyBitSet> huffmanCoding) {
-        byte[] bytes = new byte[huffmanCoding.size()];
+    private byte[] getStorableBytes(HuffmanTree huffmanCoding) {
+        byte[] bytes = new byte[huffmanCoding.coding.size()];
 
         int i = 0;
-        for (Byte key : huffmanCoding.keySet()) {
+        for (Byte key : huffmanCoding.coding.keySet()) {
             bytes[i] = key;
             i++;
         }

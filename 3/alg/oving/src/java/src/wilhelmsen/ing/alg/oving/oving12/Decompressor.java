@@ -2,6 +2,7 @@ package src.wilhelmsen.ing.alg.oving.oving12;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 /**
  * Created by Harald on 07.11.2016.
@@ -36,7 +37,7 @@ public class Decompressor {
         return new byte[0];
     }
 
-    private byte[] decode(){
+    private Map<Byte, MyBitSet> decode(){
         return null;
     }
 
