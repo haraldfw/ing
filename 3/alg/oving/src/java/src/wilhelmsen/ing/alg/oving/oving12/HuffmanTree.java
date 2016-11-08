@@ -11,6 +11,7 @@ import java.util.Queue;
 public class HuffmanTree {
 
     public Map<Byte, MyBitSet> coding;
+    public Node tree;
 
     /**
      * Creates a huffman coding tree from raw uncompressed data.
@@ -24,7 +25,7 @@ public class HuffmanTree {
                 BitsUtil.byteToUnicode(value.getByteValue()) + " " + value.getFreq()));
         System.out.println("\n");
 
-        Node tree = generateTree(nodeMap);
+        tree = generateTree(nodeMap);
         coding = generateCoding(tree, new MyBitSet(0), new HashMap<>(), 0);
 
         coding.entrySet().forEach(
@@ -34,6 +35,7 @@ public class HuffmanTree {
     }
 
     public HuffmanTree(Node tree) {
+        this.tree = tree;
         coding = generateCoding(tree, new MyBitSet(0), new HashMap<>(), 0);
     }
 
@@ -67,7 +69,7 @@ public class HuffmanTree {
             }
             Node nodeTwo = queue.poll();
 
-            Node merged = mergeNodes(nodeOne, nodeTwo);
+            Node merged = new Node(nodeOne, nodeTwo);
             queue.add(merged);
         }
         return null;
@@ -86,7 +88,4 @@ public class HuffmanTree {
         return nodes;
     }
 
-    private Node mergeNodes(Node left, Node right) {
-        return new Node(left.getFreq() + right.getFreq(), left, right);
-    }
 }

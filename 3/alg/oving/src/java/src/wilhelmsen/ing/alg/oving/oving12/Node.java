@@ -15,8 +15,8 @@ public class Node implements Comparable<Node> {
         this.freq = freq;
     }
 
-    public Node(int freq, Node left, Node right) {
-        this.freq = freq;
+    public Node(Node left, Node right) {
+        this.freq = left.getFreq() + right.getFreq();
         this.left = left;
         this.right = right;
     }

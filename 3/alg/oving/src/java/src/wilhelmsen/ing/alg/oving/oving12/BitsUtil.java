@@ -53,4 +53,13 @@ public final class BitsUtil {
         bitSet1.setRealSize(shift + bitSet2.getRealSize());
         return bitSet1;
     }
+
+    public static int concatBitSets(BitSet bitSet1, int realsize1, BitSet bitSet2, int realsize2) {
+        int i = bitSet2.nextSetBit(0);
+        while (i > -1) {
+            bitSet1.set(realsize1 + i);
+            i = bitSet2.nextSetBit(i + 1);
+        }
+        return realsize1 + realsize2;
+    }
 }

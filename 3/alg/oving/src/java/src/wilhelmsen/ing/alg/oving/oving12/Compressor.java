@@ -9,37 +9,37 @@ import java.util.Map;
 public class Compressor {
     public static void main(String[] args) throws Exception {
         Compressor compressor = new Compressor();
-        byte[] bytes = compressor.compress(FileHandler.readContextFile("/compression/lipsum.txt"));
+        byte[] bytes = compressor.compress(FileHandler.readContextFile("/compression/oppg12.txt"));
         FileHandler.writeFile("\\D:\\dev\\compressed.d", bytes);
     }
 
 
-
     private byte[] compress(byte[] input) throws Exception {
         HuffmanTree huffmanTree = new HuffmanTree(input);
-        byte[] charsAsByteAr = getStorableBytes(huffmanTree);
+//        byte[] charsAsByteAr = getStorableBytes(huffmanTree);
+        byte[] charsAsByteAr = encodedNode(huffmanTree.tree).toByteArray();
         return buildCompressedFile(charsAsByteAr, FileHandler.bitSetToByteAr(compress(huffmanTree, input)));
     }
 
-    private byte[] buildCompressedFile(byte[] freqs, byte[] compressedContents) {
+    private byte[] buildCompressedFile(byte[] huffmanTree, byte[] compressedContents) {
         /* File contents, in bytes:
         freqs-size[1]\
         freqs[freq-size]\
         contents
          */
         int bytesUsedForFreqLength = 1;
-        byte[] contents = new byte[bytesUsedForFreqLength + freqs.length + compressedContents.length];
-        System.out.println(freqs.length);
+        byte[] contents = new byte[bytesUsedForFreqLength + huffmanTree.length + compressedContents.length];
+        System.out.println(huffmanTree.length);
 //        byte[] freqsSizeBytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(freqs.length).array();
-        byte freqsSizeBytes = (byte) freqs.length;
+        byte freqsSizeBytes = (byte) huffmanTree.length;
         System.out.println(freqsSizeBytes);
         contents[0] = freqsSizeBytes;
 //        System.arraycopy(freqsSizeBytes, 0,
 //                contents, 0, bytesUsedForFreqLength);
-        System.arraycopy(freqs, 0,
-                contents, bytesUsedForFreqLength, freqs.length);
+        System.arraycopy(huffmanTree, 0,
+                contents, bytesUsedForFreqLength, huffmanTree.length);
         System.arraycopy(compressedContents, 0,
-                contents, bytesUsedForFreqLength + freqs.length, compressedContents.length);
+                contents, bytesUsedForFreqLength + huffmanTree.length, compressedContents.length);
 
         return contents;
     }
@@ -89,5 +89,32 @@ public class Compressor {
             i++;
         }
         return bytes;
+    }
+
+    /**
+     * Encode Huffman Node to BitSet
+     * if leaf node pushes 1 + literal byte
+     * otherwise 0
+     *
+     * @return bs BitSet with encoded Node
+     */
+    public BitSet encodedNode(Node root) {
+        MyBitSet bs = new MyBitSet(0);
+        encodedNode(root, bs);
+        return bs;
+    }
+
+    /**
+     * recursive helper method
+     */
+    private void encodedNode(Node node, MyBitSet bs) {
+        if (node.isLeaf()) {
+            bs.pushBit(true);
+            bs.pushByte(node.getByteValue());
+        } else {
+            bs.pushBit(false);
+            encodedNode(node.getLeft(), bs);
+            encodedNode(node.getRight(), bs);
+        }
     }
 }
