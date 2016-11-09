@@ -22,10 +22,10 @@ public final class BitsUtil {
         return clone;
     }
 
-    public static String bitSetToBinaryString(MyBitSet set) {
+    public static String bitSetToBinaryString(MyBitSet bitSet) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < set.getRealSize(); i++) {
-            sb.append(set.get(i) ? "1" : "0");
+        for (int i = 0; i < bitSet.getRealSize(); i++) {
+            sb.append(bitSet.get(i) ? "1" : "0");
         }
         return sb.toString();
     }

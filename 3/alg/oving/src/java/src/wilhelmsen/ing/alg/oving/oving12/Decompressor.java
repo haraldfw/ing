@@ -14,7 +14,7 @@ public class Decompressor {
 
     public static void main(String[] args) throws Exception {
         Decompressor decompressor = new Decompressor();
-        String baseFilename = "D:\\dev\\lipsum.txt";
+        String baseFilename = "D:\\dev\\oppg12.txt";
         byte[] input = Files.readAllBytes(Paths.get(baseFilename + ".d"));
         byte[] decompressed = decompressor.decompress(input);
         FileHandler.writeFile(baseFilename, decompressed);

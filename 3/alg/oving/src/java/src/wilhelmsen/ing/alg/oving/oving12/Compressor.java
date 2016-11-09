@@ -10,7 +10,7 @@ import java.util.Map;
 public class Compressor {
     public static void main(String[] args) throws Exception {
         Compressor compressor = new Compressor();
-        String filename = "lipsum.txt";
+        String filename = "oppg12.txt";
         byte[] bytes = compressor.compress(FileHandler.readContextFile("/compression/" + filename));
         FileHandler.writeFile("\\D:\\dev\\" + filename + ".d", bytes);
     }
@@ -18,8 +18,10 @@ public class Compressor {
 
     private byte[] compress(byte[] input) throws Exception {
         HuffmanTree huffmanTree = new HuffmanTree(input);
-        byte[][] freqTable = getStorableBytes(huffmanTree.nodeMap);
-        return buildCompressedFile(freqTable, compress(huffmanTree, input).toByteArray());
+
+        byte[][] freqTable = getFrequencyTable(huffmanTree.nodeMap);
+        byte[] encodedData = encodeData(huffmanTree, input).toByteArray();
+        return buildCompressedFile(freqTable, encodedData);
     }
 
     private byte[] buildCompressedFile(byte[][] freqTable, byte[] compressedContents) {
@@ -47,7 +49,7 @@ public class Compressor {
         return contents;
     }
 
-    private BitSet compress(HuffmanTree mapping, byte[] input) {
+    private BitSet encodeData(HuffmanTree mapping, byte[] input) {
         MyBitSet bits = new MyBitSet(0);
         for (byte b : input) {
             BitsUtil.concatBitSets(bits, mapping.getCode(b));
@@ -55,7 +57,7 @@ public class Compressor {
         return bits;
     }
 
-    private byte[][] getStorableBytes(Map<Byte, Node> freqMap) {
+    private byte[][] getFrequencyTable(Map<Byte, Node> freqMap) {
         byte[] characters = new byte[freqMap.size()];
         byte[] freqs = new byte[freqMap.size() * Integer.BYTES];
 
