@@ -10,7 +10,7 @@ import java.util.Map;
 public class Compressor {
     public static void main(String[] args) throws Exception {
         Compressor compressor = new Compressor();
-        String filename = "oppg12.txt";
+        String filename = "lipsum3.txt";
         byte[] bytes = compressor.compress(FileHandler.readContextFile("/compression/" + filename));
         FileHandler.writeFile("\\D:\\dev\\" + filename + ".d", bytes);
     }
