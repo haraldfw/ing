@@ -15,5 +15,5 @@ public abstract class Heuristic {
         this.goalY = goalY;
     }
 
-    abstract double estimate(StarNode from);
+    public abstract double estimate(StarNode from);
 }

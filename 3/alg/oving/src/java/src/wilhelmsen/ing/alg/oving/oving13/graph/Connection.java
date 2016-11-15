@@ -5,12 +5,10 @@ package src.wilhelmsen.ing.alg.oving.oving13.graph;
  */
 public class Connection {
 
-    public StarNode start;
     public StarNode end;
     public double weight;
 
-    public Connection(StarNode start, StarNode end, double weight) {
-        this.start = start;
+    public Connection(StarNode end, double weight) {
         this.end = end;
         this.weight = weight;
     }

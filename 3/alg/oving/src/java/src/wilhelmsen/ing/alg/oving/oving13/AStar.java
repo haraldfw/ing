@@ -3,112 +3,69 @@ package src.wilhelmsen.ing.alg.oving.oving13;
 import src.wilhelmsen.ing.alg.oving.oving13.estimate.Heuristic;
 import src.wilhelmsen.ing.alg.oving.oving13.graph.Connection;
 import src.wilhelmsen.ing.alg.oving.oving13.graph.StarNode;
-import src.wilhelmsen.ing.alg.oving.util.FileUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Harald on 9.11.16.
  */
 public class AStar {
 
-    private final Map<Integer, StarNode> graph;
     private Heuristic heuristic;
 
     public AStar(Heuristic heuristic) {
-        graph = buildGraph();
         this.heuristic = heuristic;
     }
 
-    private void generatePath(int startId, int endId) {
-        generatePath(graph.get(startId), graph.get(endId));
-    }
+    public int generatePath(StarNode start, StarNode goal) {
+        Queue<StarNode> open = new PriorityQueue<>();
+        List<StarNode> closed = new ArrayList<>();
 
-    private void generatePath(StarNode start, StarNode end) {
+        start.setEstimatedTotalCost(heuristic.estimate(start));
 
-    }
+        open.add(start);
 
-    private Map<Integer, StarNode> buildGraph() {
-        Map<Integer, StarNode> nodeMap = getNodes("/graph/noder.txt");
-        mergeNodes(nodeMap, "/graph/kanter.txt");
+        int nodesVisited = 0;
 
-        return nodeMap;
-    }
+        while (!open.isEmpty()) {
+            nodesVisited++;
+            StarNode curr = open.poll();
 
-    private void mergeNodes(Map<Integer, StarNode> nodeMap, String edgesFilePath) {
-        Map<Integer, List<Connection>> connMap = createConnections(nodeMap, edgesFilePath);
+            if (curr == goal) {
+                break;
+            }
 
-        // insert connections into each StarNode
-        for (Map.Entry<Integer, List<Connection>> entry : connMap.entrySet()) {
-            int key = entry.getKey();
-            List<Connection> connList = entry.getValue();
-            Connection[] connections = connList.toArray(new Connection[connList.size()]);
-            nodeMap.get(key).setConnections(connections);
-        }
-    }
+            closed.add(curr);
+            Connection[] connections = curr.getConnections();
+            if(connections == null) {
+                continue;
+            }
+            for (Connection connection : curr.getConnections()) {
+                // new node to evaluate
+                StarNode neighbor = connection.end;
 
-    private Map<Integer, List<Connection>> createConnections(Map<Integer, StarNode> nodeMap, String edgesFilePath) {
-        Map<Integer, List<Connection>> connMap = new HashMap<>();
-        BufferedReader br = FileUtils.getResourceReader(edgesFilePath);
-        int connectionsCreated = 0;
-        try {
-            // count-line
-            System.out.println("CONNS: Creating " + br.readLine().trim() + " connections.");
-            for (String line; (line = br.readLine()) != null; ) {
-                String[] elems = splitLine(line);
-
-                // start, end, time, length, speedlimit
-                int start = Integer.valueOf(elems[0]);
-                int end = Integer.valueOf(elems[1]);
-                int time = Integer.valueOf(elems[2]);
-
-                List<Connection> connList = connMap.get(start);
-                if (connList == null) {
-                    connList = new ArrayList<>();
-                    connMap.put(start, connList);
+                // skip if node already evaluated
+                if (closed.contains(neighbor)) {
+                    continue;
                 }
-                connList.add(new Connection(nodeMap.get(start), nodeMap.get(end), time));
-                connectionsCreated++;
+
+                // the neighbor's cost so far
+                double newCostSoFar = curr.getCostSoFar() + connection.weight;
+
+                if (!open.contains(neighbor)) {
+                    open.add(neighbor);
+                } else if (newCostSoFar >= neighbor.getCostSoFar()) {
+                    continue;
+                }
+                // this path is the best so far. Set curr as new parent of neighbor
+                neighbor.setParent(curr);
+                neighbor.setCostSoFar(newCostSoFar);
+                neighbor.setEstimatedTotalCost(newCostSoFar + heuristic.estimate(neighbor));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        System.out.println("CONNS: Done. Created " + connectionsCreated + " connections.");
-        return connMap;
+
+        return nodesVisited;
     }
 
-    private Map<Integer, StarNode> getNodes(String path) {
-        Map<Integer, StarNode> nodeMap = new HashMap<>();
 
-        BufferedReader br = FileUtils.getResourceReader(path);
-        try {
-            // count-line
-            System.out.println("NODES: Creating " + br.readLine().trim() + " nodes...");
-            for (String line; (line = br.readLine()) != null; ) {
-                String[] elems = splitLine(line);
-
-                // id, x, y
-                int id = Integer.valueOf(elems[0]);
-                double x = Double.valueOf(elems[1]);
-                double y = Double.valueOf(elems[2]);
-
-                StarNode node = new StarNode(x, y);
-                nodeMap.put(id, node);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("NODES: Done. Created " + nodeMap.size() + " nodes.");
-
-        return nodeMap;
-    }
-
-    private String[] splitLine(String line) {
-        return line.trim().split("[\t( )]+");
-    }
 }

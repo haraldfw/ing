@@ -5,11 +5,13 @@ package src.wilhelmsen.ing.alg.oving.oving13.graph;
  */
 public class StarNode implements Comparable<StarNode> {
 
+    private static final double INIT_VAL = Double.POSITIVE_INFINITY;
+
     public final double x;
     public final double y;
 
-    private double costSoFar = -1;
-    private double estimatedTotalCost = -1;
+    private double costSoFar = INIT_VAL;
+    private double estimatedTotalCost = INIT_VAL;
 
     private StarNode parent;
 
@@ -46,7 +48,7 @@ public class StarNode implements Comparable<StarNode> {
 
     @Override
     public int compareTo(StarNode that) {
-        double diff = that.estimatedTotalCost - this.estimatedTotalCost;
+        double diff = estimatedTotalCost - that.estimatedTotalCost;
         return diff < 0 ? -1 : (diff > 0 ? 1 : 0);
     }
 
@@ -56,5 +58,11 @@ public class StarNode implements Comparable<StarNode> {
 
     public void setConnections(Connection[] connections) {
         this.connections = connections;
+    }
+
+    public void reset() {
+        costSoFar = INIT_VAL;
+        estimatedTotalCost = INIT_VAL;
+        parent = null;
     }
 }
