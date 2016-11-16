@@ -7,22 +7,18 @@ import src.wilhelmsen.ing.alg.oving.oving13.graph.StarNode;
  */
 public class Haversine extends Heuristic {
 
-    public static final double EARTH_RADIUS = 6371; // In kilometers
+    private final StarNode goal;
 
-    public Haversine(double goalX, double goalY) {
-        super(goalX, goalY);
+    public Haversine(StarNode goal) {
+        super(goal);
+        this.goal = goal;
     }
 
     @Override
     public double estimate(StarNode from) {
-        double lat1 = from.x;
-        double lat2 = goalX;
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(goalY - from.y);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-
-        double a = Math.pow(Math.sin(dLat / 2),2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2),2);
-        return 2 * EARTH_RADIUS * Math.asin(Math.sqrt(a));
+        double sin_bredde = Math.sin((goal.breddeRad - from.breddeRad) / 2.0);
+        double sin_lengde = Math.sin((goal.lengdeRad - from.lengdeRad) / 2.0);
+        return (int) (41701090.90909090909090909091 * Math.asin(Math.sqrt(
+                sin_bredde * sin_bredde + goal.cosBredde * from.cosBredde * sin_lengde * sin_lengde)));
     }
 }

@@ -23,23 +23,23 @@ public class Main {
         Main main = new Main();
         Map<Integer, StarNode> graph = main.buildGraph();
 
-        StarNode start = graph.get(2146837);
+        StarNode start = graph.get(2433007);
+        StarNode goal = graph.get(3355292);
+//        StarNode start = graph.get(2341264);
+//        StarNode goal = graph.get(2087961);
 
-        StarNode goal = graph.get(2341264);
-
-        main.runAStar(start, goal);
-        main.createMapHtml(start, goal, "D:\\Dev\\astar.html");
+        main.runDijkstra(start, goal);
+        main.createMapHtml(start, goal, "D:\\Dev\\dijkstra.html");
 
         graph.values().forEach(StarNode::reset);
 
-        main.runDijkstra(start, goal);
-
-        main.createMapHtml(start, goal, "D:\\Dev\\dijkstra.html");
+        main.runAStar(start, goal);
+        main.createMapHtml(start, goal, "D:\\Dev\\astar.html");
     }
 
     private void runAStar(StarNode start, StarNode goal) {
         System.out.println("ASTAR: Starting...");
-        AStar aStar = new AStar(new Haversine(goal.x, goal.y));
+        AStar aStar = new AStar(new Haversine(goal));
         int nodesVisited;
         long startTime = System.currentTimeMillis();
         nodesVisited = aStar.generatePath(start, goal);
@@ -117,12 +117,12 @@ public class Main {
             for (String line; (line = br.readLine()) != null; ) {
                 String[] elems = splitLine(line);
 
-                // id, x, y
+                // id, breddeRad, lengdeRad
                 int id = Integer.valueOf(elems[0]);
-                double x = Double.valueOf(elems[1]);
-                double y = Double.valueOf(elems[2]);
+                double bredde = Double.valueOf(elems[1]);
+                double lengde = Double.valueOf(elems[2]);
 
-                StarNode node = new StarNode(x, y);
+                StarNode node = new StarNode(bredde, lengde);
                 nodeMap.put(id, node);
             }
         } catch (IOException e) {
@@ -138,17 +138,17 @@ public class Main {
     }
 
     private void createMapHtml(StarNode start, StarNode goal, String filename) throws Exception {
-        String map_start = new String(FileHandler.readContextFile("/graph/maps_start.html"), "UTF-8");
-        String map_end = new String(FileHandler.readContextFile("/graph/maps_end.html"), "UTF-8");
+        String html_start = new String(FileHandler.readContextFile("/graph/maps_start.html"), "UTF-8");
+        String html_end = new String(FileHandler.readContextFile("/graph/maps_end.html"), "UTF-8");
 
         List<String> coordinateStrings = new ArrayList<>();
         StarNode curr = goal;
         while (!start.equals(curr)) {
-            coordinateStrings.add("{lat:" + String.valueOf(curr.x) + ", lng:" + String.valueOf(curr.y) + "}");
+            coordinateStrings.add("{lat:" + String.valueOf(curr.bredde) + ",lng:" + String.valueOf(curr.lengde) + "}");
             curr = curr.getParent();
         }
 
-        String html = map_start + String.join(",", coordinateStrings) + map_end;
+        String html = html_start + String.join(",\n", coordinateStrings) + html_end;
         org.apache.commons.io.FileUtils.writeStringToFile(new File(filename), html, "UTF-8");
     }
 }

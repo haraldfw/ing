@@ -11,7 +11,11 @@ public class Manhattan extends Heuristic {
         super(goalX, goalY);
     }
 
+    public Manhattan(StarNode node) {
+        super(node.bredde, node.lengde);
+    }
+
     public double estimate(StarNode from) {
-        return Math.abs((goalX - from.x) + (goalY - from.y));
+        return Math.abs((goalBredde - from.breddeRad) + (goalLengde - from.lengdeRad));
     }
 }

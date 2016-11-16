@@ -11,10 +11,14 @@ public class Euclidean extends Heuristic {
         super(goalX, goalY);
     }
 
+    public Euclidean(StarNode node) {
+        super(node);
+    }
+
     @Override
     public double estimate(StarNode from) {
-        double xDiff = goalX - from.x;
-        double yDiff = goalY - from.y;
+        double xDiff = goalLengde - from.breddeRad;
+        double yDiff = goalBredde - from.lengdeRad;
         return Math.sqrt(xDiff * yDiff + yDiff * yDiff);
     }
 }

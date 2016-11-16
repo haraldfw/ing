@@ -39,9 +39,12 @@ public class Dijkstra {
                 double dist = curr.getEstimatedTotalCost() + connection.weight;
 
                 if (dist < endNode.getEstimatedTotalCost()) {
-                    queue.add(endNode);
                     endNode.setParent(curr);
                     endNode.setEstimatedTotalCost(dist);
+                    if(queue.contains(endNode)) {
+                        queue.remove(endNode);
+                    }
+                    queue.add(endNode);
                 }
             }
         }

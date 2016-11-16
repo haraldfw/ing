@@ -7,8 +7,12 @@ public class StarNode implements Comparable<StarNode> {
 
     private static final double INIT_VAL = Double.POSITIVE_INFINITY;
 
-    public final double x;
-    public final double y;
+    public final double breddeRad;
+    public final double lengdeRad;
+    public final double cosBredde;
+
+    public final double bredde;
+    public final double lengde;
 
     private double costSoFar = INIT_VAL;
     private double estimatedTotalCost = INIT_VAL;
@@ -17,9 +21,12 @@ public class StarNode implements Comparable<StarNode> {
 
     private Connection[] connections;
 
-    public StarNode(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public StarNode(double bredde, double lengde) {
+        this.bredde = bredde;
+        this.lengde = lengde;
+        this.breddeRad = Math.toRadians(bredde);
+        this.lengdeRad = Math.toRadians(lengde);
+        this.cosBredde = Math.cos(bredde);
     }
 
     public StarNode getParent() {

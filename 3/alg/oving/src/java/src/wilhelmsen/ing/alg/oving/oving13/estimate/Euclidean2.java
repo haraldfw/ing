@@ -11,6 +11,10 @@ public class Euclidean2 extends Heuristic {
         super(goalX, goalY);
     }
 
+    public Euclidean2(StarNode node) {
+        super(node);
+    }
+
     /**
      * Returns the Euclidean distance to the power of 2.
      * @param from
@@ -18,8 +22,8 @@ public class Euclidean2 extends Heuristic {
      */
     @Override
     public double estimate(StarNode from) {
-        double xDiff = goalX - from.x;
-        double yDiff = goalY - from.y;
+        double xDiff = goalLengde - from.breddeRad;
+        double yDiff = goalBredde - from.lengdeRad;
         return xDiff * yDiff + yDiff * yDiff;
     }
 }

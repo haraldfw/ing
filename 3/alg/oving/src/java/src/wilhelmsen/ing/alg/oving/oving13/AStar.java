@@ -19,16 +19,14 @@ public class AStar {
 
     public int generatePath(StarNode start, StarNode goal) {
         Queue<StarNode> open = new PriorityQueue<>();
-        List<StarNode> closed = new ArrayList<>();
+        HashSet<StarNode> closed = new HashSet<>();
 
         start.setEstimatedTotalCost(heuristic.estimate(start));
+        start.setCostSoFar(0);
 
         open.add(start);
 
-        int nodesVisited = 0;
-
         while (!open.isEmpty()) {
-            nodesVisited++;
             StarNode curr = open.poll();
 
             if (curr == goal) {
@@ -52,19 +50,21 @@ public class AStar {
                 // the neighbor's cost so far
                 double newCostSoFar = curr.getCostSoFar() + connection.weight;
 
-                if (!open.contains(neighbor)) {
-                    open.add(neighbor);
-                } else if (newCostSoFar >= neighbor.getCostSoFar()) {
+                if (newCostSoFar >= neighbor.getCostSoFar()) {
                     continue;
                 }
                 // this path is the best so far. Set curr as new parent of neighbor
                 neighbor.setParent(curr);
                 neighbor.setCostSoFar(newCostSoFar);
                 neighbor.setEstimatedTotalCost(newCostSoFar + heuristic.estimate(neighbor));
+
+                if (open.contains(neighbor))
+                    open.remove(neighbor);
+                open.add(neighbor);
             }
         }
 
-        return nodesVisited;
+        return closed.size();
     }
 
 

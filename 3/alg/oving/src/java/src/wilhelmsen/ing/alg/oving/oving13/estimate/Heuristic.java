@@ -7,12 +7,17 @@ import src.wilhelmsen.ing.alg.oving.oving13.graph.StarNode;
  */
 public abstract class Heuristic {
 
-    protected final double goalX;
-    protected final double goalY;
+    protected final double goalBredde;
+    protected final double goalLengde;
 
-    public Heuristic(double goalX, double goalY) {
-        this.goalX = goalX;
-        this.goalY = goalY;
+    public Heuristic(double bredde, double lengde) {
+        this.goalBredde = bredde;
+        this.goalLengde = lengde;
+    }
+
+    public Heuristic(StarNode node) {
+        this.goalBredde = node.breddeRad;
+        this.goalLengde = node.lengdeRad;
     }
 
     public abstract double estimate(StarNode from);
