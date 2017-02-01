@@ -24,7 +24,7 @@ def is_prime(number):
         if number % i == 0:
             return False
         i += 2
-    return True 
+    return True
 
 
 def prime_checker(primes):
