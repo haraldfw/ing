@@ -37,7 +37,9 @@ def prime_checker(primes):
 
 def print_primes_in_range(thread_num, rng_start, rng_end):
     global to_check, max_value
-    if rng_start == 0 or rng_start % 2 == 0:
+    if rng_start <= 2:
+        rng_start = 3
+    elif rng_start % 2 == 0:
         rng_start += 1
     to_check = rng_start
     max_value = rng_end
