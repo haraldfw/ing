@@ -57,8 +57,8 @@ def print_primes_in_range(thread_num, rng_start, rng_end):
 
 
 def main():
-    usage = 'usage: python.py <number to check>' \
-            '\npython primes.py <threads> <number range start> <number range end>'
+    usage = 'usage: \n\tpython primes.py <number>' \
+            '\n\tpython primes.py <threads> <range start> <range end>'
     args = map(int, sys.argv[1:])
     if len(args) == 1:
         print(is_prime(args[0]))
