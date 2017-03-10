@@ -1,6 +1,6 @@
 import socket
 
-import chatroom
+import server.chatroom as chatroom
 
 rooms = {}
 
@@ -10,11 +10,10 @@ def bts(data):
 
 
 def handle_join(addr, data):
+    print('handling join')
     split_index = str(data).find(',')
     user_name = data[0:split_index]
     room_name = data[split_index + 1:]
-    print("username: " + user_name)
-    print('room name: ' + room_name)
 
     if room_name not in rooms:
         room = chatroom.ChatRoom()
@@ -24,20 +23,26 @@ def handle_join(addr, data):
     room = rooms[room_name]
     room.join(user_name, addr)
 
+    print('User ' + user_name + ' joined room ' + room_name)
+
 
 def handle_message(data):
-    room_name = data[4:52]
-    message = data[52:]
+    print('handling msg')
+    split_index = str(data).find(',')
+    room_name = data[0:split_index]
+    message = data[split_index + 1:]
     room = rooms[room_name]
     room.send(message)
 
 
 def handle_disconnect(addr):
+    print('handling disconnect')
     for r in rooms:
         r.leave(addr)
 
 
 def handle_request(data, addr):
+    print(data)
     request_type = data[:1]
     print(request_type)
     if request_type == '0':  # join
@@ -51,16 +56,17 @@ def handle_request(data, addr):
 def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('0.0.0.0', 5005))
-    while 1:
-        sock.listen(1)
-        conn, addr = sock.accept()
-        addr = addr[0]
-        try:
+    conn = None
+    try:
+        while 1:
+            sock.listen(1)
+            conn, addr = sock.accept()
+
             data = conn.recv(1024)
-            handle_request(bts(data), addr)
-        finally:
-            conn.close()
-            sock.close()
+            handle_request(bts(data), addr[0])
+    finally:
+        conn.close()
+        sock.close()
 
 
 if __name__ == '__main__':

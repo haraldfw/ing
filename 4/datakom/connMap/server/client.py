@@ -10,6 +10,9 @@ class Client:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((ip, 5005))
 
+    def client_listener(self):
+        pass
+
     def disconnect(self):
         self.sock.close()
 

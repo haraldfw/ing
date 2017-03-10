@@ -1,6 +1,6 @@
 import socket
 
-sock = None
+s = None
 
 
 def satb(strings):
@@ -19,25 +19,34 @@ def build_message_request(room_name, message):
     return satb(['2', room_name, message])
 
 
+def tcp_connect(ip, port):
+    global s
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((ip, port))
+
+
 def main():
-    global sock
+    global s
     room_name = input("Room name: ")[:12]
     username = input("Username: ")[:12]
     server_ip = input("Server ip: ")
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((server_ip, 5005))
+    tcp_connect(server_ip, 5005)
 
-    sock.send(build_join_request(room_name, username))
+    s.send(build_join_request(room_name, username))
 
     while 1:
         message = input("Input message or '0' to disconnect\n")
+        print('msg: ' + message)
         if message:
             if message == '0':
-                sock.send(build_disconnect_request())
+                s.send(build_disconnect_request())
                 break
             else:
-                sock.send(build_message_request(room_name, message))
+                print('sending message')
+                s.send(build_message_request(room_name, message))
+        else:
+            print('message is None')
 
 
 if __name__ == "__main__":

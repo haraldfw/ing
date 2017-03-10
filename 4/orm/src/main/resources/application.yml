@@ -1,0 +1,31 @@
+application:
+  hostname: localhost:8080
+  secret_key: ENC(Q1FpkUHdVfYU0DfzyX2GR/wuHTf0+AlkYOJiPf2LRRrV5ZwGUC8TT0C2zriKTd3ZUGm/b4FfAVNgzzLFrzurAbxM7Sg9wNb4GpLC8SC3wFeQftesGlFgGlVS9W+tmoODK9hQNsKlaAUAqnDmqJnvSqApHoSMZbDLOJxTF+YG7Gagq0udu3Ab3ulrxN2nPI5gzfZN8q4TxO1QfKmfAYe+J/pc+xSwGcIskOOu7UqlpbAoVf7T+cf8QheA7S+vjGfpYkQYqZVxue4SqqJwkyZOhmfs9ZSd54KVLREFvQ66A9Q86FG8WyffZGHTxzCpwhEADzSR8Xu1ZaMJ+5BjnTHjHBRAFg4McjPTNSLn/9rrBXo=)
+
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://tihlde.org:3306/haraldfw
+    username: scrum05
+    password: ENC(q41c+P9rkQ1S8nxLO3mM5HzaA1LJ0bdu)
+    driver-class-name: com.mysql.jdbc.Driver
+    tomcat:
+      max-active: 4
+      connection-properties: useUnicode=true;characterEncoding=utf-8;max_allowed_packet=16000000;autoReconnect=true;logAbandoned="true";
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties.hibernate:
+      current_session_context_class: org.springframework.orm.hibernate4.SpringSessionContext
+      show_sql: false
+      format_sql: true
+      use_sql_comments: true
+
+jasypt:
+    encryptor:
+        bean: hibernateEncryptor
+        password: ${SCRUM5_ENCPW:}
