@@ -1,7 +1,5 @@
 import socket
 
-import struct
-
 from common.constants import BUFFER_SIZE
 import common.ans_packet as ans_packet
 import common.qpacket as qpacket

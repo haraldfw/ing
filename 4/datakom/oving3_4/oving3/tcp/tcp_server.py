@@ -1,5 +1,5 @@
 import socket
-from _thread import start_new_thread
+from threading import Thread
 
 import common.ans_packet as ans_packet
 import common.qpacket as qpacket
@@ -57,15 +57,12 @@ def accept_connections():
     while True:
         conn, address = s.accept()
         print('Accepted new connection with address ' + str(address))
-        start_new_thread(client_handler, (conn, address,))
+        Thread(target=client_handler, args=(conn, address,)).start()
 
 
 def main():
     start_socket()
     accept_connections()
-
-
-# TODO implement PING/PONG to close connections
 
 
 if __name__ == '__main__':
