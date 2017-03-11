@@ -2,14 +2,20 @@ import socket
 
 import struct
 
-BUFFER_SIZE = 1024
+from common.constants import BUFFER_SIZE
+import common.ans_packet as ans_packet
+import common.qpacket as qpacket
 s = None
 
 
 def read_conn_props():
-    ip = input('Ip to calc-server: ')
-    port = int(input('Port to calc-server: '))
-    return ip, port
+    ip = input('Ip to calc-server (blank for 127.0.0.1): ')
+    if not ip:
+        ip = '127.0.0.1'
+    port = input('Port to calc-server (blank for 5005): ')
+    if not port:
+        port = 5005
+    return ip, int(port)
 
 
 def connect():
@@ -43,14 +49,16 @@ def main():
     while True:
         op, num1, num2 = read_calc_input()
         if op == 'q':
-            print('Client actively quit the application. Exiting...')
+            print('Client actively quit the application. Sending exit-signal...')
             s.send(op.encode('utf-8'))
             break
         if not validate_input(op, num1, num2):
             print('Invalid input')
             continue
-        s.send(','.join([op, num1, num2]).encode('utf-8'))
-        print(struct.unpack('f', s.recv(BUFFER_SIZE)))
+        packet = qpacket.from_values(op, num1, num2)
+        s.send(packet.packet_bytes)
+        packet = ans_packet.from_bytes(s.recv(BUFFER_SIZE))
+        print('Answer returned from server: ' + str(packet.value))
     s.close()
 
 
