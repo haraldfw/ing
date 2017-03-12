@@ -1,44 +1,43 @@
 import socket
 import struct
 
-BUFFER_SIZE = 1024
-s = None
+import common.qpacket as qpacket
+import common.ans_packet as anspacket
+from common.constants import UDP_CLNT_INPUT_PORT, UDP_SERV_INPUT_PORT, BUFFER_SIZE, LISTEN_ALL_IP
+from common.input_helper import read_conn_props, read_port
 
-
-def read_listen_props():
-    ip = input('Ip to listen on (blank for 0.0.0.0): ')
-    if not ip:
-        ip = '0.0.0.0'
-    port = int(input('Port to listen on: '))
-    return ip, port
+sock = None
+send_port = UDP_CLNT_INPUT_PORT
 
 
 def start_socket():
-    global s
-    ip, port = read_listen_props()
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # datagram socket
-    s.bind((ip, port))
+    global sock, send_port
+    ip, port = read_conn_props(standard_ip=LISTEN_ALL_IP, standard_port=UDP_SERV_INPUT_PORT)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((ip, port))
+    send_port = read_port(standard_port=UDP_CLNT_INPUT_PORT, machine_role='client')
     print('Listening...')
-    return port
 
 
 def main():
-    global s
-    port = start_socket()
-    while (True):
-        data, addr = s.recvfrom(BUFFER_SIZE)
-        data = data.decode('utf-8')
-        print(data)
-        values = data.split(sep=',')
-        op = values[0]
-        num1 = float(values[1])
-        num2 = float(values[2])
+    global sock
+    start_socket()
+    while True:
+        try:
+            data, addr = sock.recvfrom(BUFFER_SIZE)
+        except ConnectionResetError:
+            continue
+        print('data recieved')
+        packet = qpacket.from_bytes(data)
         ans = -1337
-        if op == '0':
-            ans = num1 + num2
-        elif op == '1':
-            ans = num1 - num2
-        s.sendto(struct.pack('f', ans), (addr, port))
+        if packet.op == '0':
+            ans = packet.num1 + packet.num2
+        elif packet.op == '1':
+            ans = packet.num1 - packet.num2
+        packet = anspacket.from_float(ans)
+        print(str(addr))
+        print(str(send_port))
+        sock.sendto(packet.packet_bytes, (addr[0], send_port))
 
 
 if __name__ == '__main__':

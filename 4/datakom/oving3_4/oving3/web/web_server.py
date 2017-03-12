@@ -1,24 +1,15 @@
 import socket
 from threading import Thread
 
-from common.constants import BUFFER_SIZE
+from common.constants import BUFFER_SIZE, LISTEN_ALL_IP, HTTP_PORT
+from common.input_helper import read_conn_props
 
-s = None
-
-
-def read_listen_props():
-    ip = input('Ip to listen on (blank for 0.0.0.0): ')
-    if not ip:
-        ip = '0.0.0.0'
-    port = input('Port to listen on (blank for 80): ')
-    if not port:
-        port = 80
-    return ip, int(port)
+sock = None
 
 
 def start_socket():
-    global s
-    ip, port = read_listen_props()
+    global sock
+    ip, port = read_conn_props(standard_ip=LISTEN_ALL_IP, standard_port=HTTP_PORT)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((ip, port))
     s.listen(10)
@@ -32,17 +23,16 @@ def client_handler(connection, address):
         print('Client ' + str(address) + ' closed by remote host')
         connection.close()
         return
-    headers = str(data).split('\n')
     lis = []
-    for h in headers:
+    for h in str(data).split('\n'):
         if h:
             lis.append('<li>{}</li>'.format(h))
     packet = "HTTP/1.0 200 OK\n" \
              "Content-Type: text/html\n" \
              "\n" \
              "<html><body>" \
-             "<H1> Hilsen. Du har koblet deg opp til min enkle web-tjener </h1>" \
-             "Header fra klient er:" \
+             "<H1> Good day. This is my simple web-server coded using tcp-sockets in Python </h1>" \
+             "Header(s) from the client:" \
              "<ul>\n"
 
     packet += ''.join(lis) + "</ul></body></html>"
@@ -53,7 +43,7 @@ def client_handler(connection, address):
 
 
 def accept_connections():
-    global s
+    global sock
     print('Started accepting connections...')
     while True:
         conn, address = s.accept()

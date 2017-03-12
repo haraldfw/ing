@@ -4,23 +4,14 @@ from threading import Thread
 import common.ans_packet as ans_packet
 import common.qpacket as qpacket
 from common.constants import BUFFER_SIZE
+from common.input_helper import read_conn_props
 
-s = None
-
-
-def read_listen_props():
-    ip = input('Ip to listen on (blank for 0.0.0.0): ')
-    if not ip:
-        ip = '0.0.0.0'
-    port = input('Port to listen on (blank for 5005): ')
-    if not port:
-        port = 5005
-    return ip, int(port)
+sock = None
 
 
 def start_socket():
-    global s
-    ip, port = read_listen_props()
+    global sock
+    ip, port = read_conn_props(standard_ip='0.0.0.0')
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((ip, port))
     s.listen(10)
@@ -52,7 +43,7 @@ def client_handler(connection, address):
 
 
 def accept_connections():
-    global s
+    global sock
     print('Started accepting connections...')
     while True:
         conn, address = s.accept()
