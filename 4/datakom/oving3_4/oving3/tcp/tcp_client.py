@@ -11,11 +11,12 @@ sock = None
 def connect():
     global sock
     ip, port = read_conn_props(machine_role='server')
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((ip, port))
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((ip, port))
 
 
 def main():
+    global sock
     connect()
     while True:
         op, num1, num2 = read_calc_input()

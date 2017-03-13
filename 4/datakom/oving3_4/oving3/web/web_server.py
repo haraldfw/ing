@@ -10,9 +10,9 @@ sock = None
 def start_socket():
     global sock
     ip, port = read_conn_props(standard_ip=LISTEN_ALL_IP, standard_port=HTTP_PORT)
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((ip, port))
-    s.listen(10)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind((ip, port))
+    sock.listen(10)
     print('Socket started')
 
 
@@ -46,7 +46,7 @@ def accept_connections():
     global sock
     print('Started accepting connections...')
     while True:
-        conn, address = s.accept()
+        conn, address = sock.accept()
         print('Accepted new connection with address ' + str(address))
         Thread(target=client_handler, args=(conn, address,)).start()
 
