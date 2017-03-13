@@ -23,19 +23,12 @@ def client_handler(connection, address):
         print('Client ' + str(address) + ' closed by remote host')
         connection.close()
         return
-    lis = []
-    for h in str(data).split('\n'):
-        if h:
-            lis.append('<li>{}</li>'.format(h))
-    packet = "HTTP/1.0 200 OK\n" \
-             "Content-Type: text/html\n" \
-             "\n" \
-             "<html><body>" \
-             "<H1> Good day. This is my simple web-server coded using tcp-sockets in Python </h1>" \
-             "Header(s) from the client:" \
-             "<ul>\n"
+    lis = ('<li>{}</li>'.format(h) for h in str(data).split('\n'))
 
-    packet += ''.join(lis) + "</ul></body></html>"
+    packet = 'HTTP/1.0 200 OK\nContent-Type: text/html\n\n' \
+             '<html><body><H1> Good day. This is my simple web-server coded using tcp-sockets in Python </h1>' \
+             'Header(s) from the client:' \
+             '<ul>{0}</ul></body></html>\n'.format(''.join(lis))
 
     connection.send(packet.encode('utf8'))
     print('Done handling request. Exiting client-handler')
